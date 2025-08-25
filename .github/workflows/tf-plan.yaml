@@ -10,6 +10,7 @@ permissions: write-all
 jobs:
 
   plan:
+    environment: prod
     name: Terraform Plan
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

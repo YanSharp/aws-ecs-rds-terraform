@@ -1,4 +1,4 @@
-name: tf-apply 
+name: tf-destroy 
 
 on:
   workflow_dispatch:
@@ -9,7 +9,8 @@ permissions: write-all
 
 jobs:
 
-  apply:
+  destroy:
+    environment: prod
     name: Terraform Apply
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

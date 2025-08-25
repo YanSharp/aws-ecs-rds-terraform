@@ -8,6 +8,7 @@ permissions: write-all
 jobs:
 
   apply:
+    environment: prod
     name: Terraform Apply
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
