@@ -35,6 +35,8 @@ jobs:
       - name: Terraform Plan
         id: plan
         uses: dflook/terraform-plan@v1
+        with:
+          path: terraform
         env:
           add_github_comment: changes-only
           TF_PLAN_COLLAPSE_LENGTH: 30

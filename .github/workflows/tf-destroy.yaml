@@ -34,5 +34,7 @@ jobs:
 
       - name: Terraform Destroy
         uses: dflook/terraform-destroy@v2
+        id: first_try
+        continue-on-error: true
         with:
-          auto_approve: false
+          path: terraform
