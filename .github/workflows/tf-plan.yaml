@@ -1,0 +1,44 @@
+name: tf-plan 
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions: write-all
+
+jobs:
+
+  plan:
+    name: Terraform Plan
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+          role-session-name: MySessionName
+          role-skip-session-tagging: true
+
+      - name: Terraform Plan
+        id: plan
+        uses: dflook/terraform-plan@v1
+        env:
+          add_github_comment: changes-only
+          TF_PLAN_COLLAPSE_LENGTH: 30
+
+      - name: Terraform Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
