@@ -17,13 +17,7 @@ terraform {
       source  = "hashicorp/aws"
     }
   }
-  backend "local" {
-    bucket = "" 
-    key    = ""
-    region = ""
-    dynamodb_table= ""
-    encrypt=""
-  }
+  backend "s3" {}
 }
 
 resource "aws_iam_role" "example_role" {
