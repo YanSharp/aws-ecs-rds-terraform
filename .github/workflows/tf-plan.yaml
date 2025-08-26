@@ -32,13 +32,16 @@ jobs:
           role-session-name: MySessionName
           role-skip-session-tagging: true
 
+      - name: AWS STS Check
+        run: aws sts get-caller-identity
+
       - name: Write backend config
         run: |
           cat > backend.hcl <<EOL
           bucket         = "${{ secrets.TF_STATE_BUCKET }}"
           key            = "global/s3/terraform.tfstate"
           region         = "us-east-1"
-          dynamodb_table = "${{ secrets.TF_STATE_LOCK_TABLE }}"
+          use_lockfile   = "${{ secrets.TF_STATE_LOCK_TABLE }}"
           encrypt        = true
           EOL
 
