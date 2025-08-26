@@ -1,4 +1,4 @@
-name: tf-apply 
+name: Terraform Apply 
 
 on:
   workflow_dispatch:
@@ -9,7 +9,6 @@ jobs:
 
   apply:
     environment: prod
-    name: Terraform Apply
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     runs-on: ubuntu-latest

@@ -1,4 +1,4 @@
-name: tf-destroy 
+name: Terraform Destroy 
 
 on:
   workflow_dispatch:
@@ -11,7 +11,6 @@ jobs:
 
   destroy:
     environment: prod
-    name: Terraform Apply
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     runs-on: ubuntu-latest
