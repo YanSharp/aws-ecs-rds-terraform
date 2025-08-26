@@ -1,0 +1,38 @@
+name: tf-apply 
+
+on:
+  # Never fir now workflow_dispatch:
+
+permissions: write-all
+
+jobs:
+
+  apply:
+    environment: prod
+    name: Terraform Apply
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+          role-session-name: MySessionName
+          role-skip-session-tagging: true
+
+      - name: Terraform Apply
+        uses: dflook/terraform-apply@v2
+        with:
+          path: terraform
+          auto_approve: false
