@@ -1,7 +1,7 @@
 name: tf-apply 
 
 on:
-  # Never fir now workflow_dispatch:
+  workflow_dispatch:
 
 permissions: write-all
 
