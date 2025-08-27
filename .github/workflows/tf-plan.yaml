@@ -35,16 +35,13 @@ jobs:
       - name: AWS STS Check
         run: aws sts get-caller-identity
 
-      - name: AWS S3 Access Checkout
-        run: aws s3 ls s3://"${{ secrets.TF_STATE_BUCKET }}"
-
       - name: Write backend config
         run: |
           cat > backend.hcl <<EOL
           bucket         = "${{ secrets.TF_STATE_BUCKET }}"
-          key            = "global/s3/terraform.tfstate"
-          region         = "us-east-1"
-          dynamodb_table   = "${{ secrets.TF_STATE_LOCK_TABLE }}"
+          key            = "tfstate/terraform.tfstate"
+          region         = "${{ vars.AWS_REGION }}"
+          dynamodb_table = "${{ secrets.TF_STATE_LOCK_TABLE }}"
           encrypt        = true
           EOL
 
