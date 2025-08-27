@@ -35,6 +35,9 @@ jobs:
       - name: AWS STS Check
         run: aws sts get-caller-identity
 
+      - name: AWS S3 Access Checkout
+        run: aws s3 ls s3://"${{ secrets.TF_STATE_BUCKET }}"
+
       - name: Write backend config
         run: |
           cat > backend.hcl <<EOL
