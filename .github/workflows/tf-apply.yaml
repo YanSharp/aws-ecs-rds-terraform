@@ -48,4 +48,4 @@ jobs:
         with:
           path: terraform
           backend_config_file: backend.hcl
-          auto_approve: false
+          auto_approve: true
