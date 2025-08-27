@@ -17,6 +17,7 @@ terraform {
       source  = "hashicorp/aws"
     }
   }
+  backend "s3" {}
 }
 
 resource "aws_iam_role" "example_role" {

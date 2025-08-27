@@ -1,7 +1,7 @@
-name: tf-apply 
+name: Terraform Apply 
 
 on:
-  # Never fir now workflow_dispatch:
+  workflow_dispatch:
 
 permissions: write-all
 
@@ -9,7 +9,6 @@ jobs:
 
   apply:
     environment: prod
-    name: Terraform Apply
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     runs-on: ubuntu-latest
@@ -30,6 +29,19 @@ jobs:
           aws-region: ${{ vars.AWS_REGION }}
           role-session-name: MySessionName
           role-skip-session-tagging: true
+
+      - name: AWS STS Check
+        run: aws sts get-caller-identity
+
+      - name: Write backend config
+        run: |
+          cat > backend.hcl <<EOL
+          bucket         = "${{ secrets.TF_STATE_BUCKET }}"
+          key            = "tfstate/terraform.tfstate"
+          region         = "${{ vars.AWS_REGION }}"
+          dynamodb_table = "${{ secrets.TF_STATE_LOCK_TABLE }}"
+          encrypt        = true
+          EOL
 
       - name: Terraform Apply
         uses: dflook/terraform-apply@v2

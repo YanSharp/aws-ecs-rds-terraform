@@ -1,4 +1,4 @@
-name: tf-plan 
+name: Terraform Plan
 
 on:
   pull_request:
@@ -11,7 +11,6 @@ jobs:
 
   plan:
     environment: prod
-    name: Terraform Plan
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     runs-on: ubuntu-latest
@@ -19,8 +18,6 @@ jobs:
       run:
         working-directory: .
 
-    if: >
-      github.event.pull_request.head.repo.fork == false
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,11 +32,25 @@ jobs:
           role-session-name: MySessionName
           role-skip-session-tagging: true
 
+      - name: AWS STS Check
+        run: aws sts get-caller-identity
+
+      - name: Write backend config
+        run: |
+          cat > backend.hcl <<EOL
+          bucket         = "${{ secrets.TF_STATE_BUCKET }}"
+          key            = "tfstate/terraform.tfstate"
+          region         = "${{ vars.AWS_REGION }}"
+          dynamodb_table = "${{ secrets.TF_STATE_LOCK_TABLE }}"
+          encrypt        = true
+          EOL
+
       - name: Terraform Plan
         id: plan
         uses: dflook/terraform-plan@v1
         with:
           path: terraform
+          backend_config_file: backend.hcl
         env:
           add_github_comment: changes-only
           TF_PLAN_COLLAPSE_LENGTH: 30
@@ -47,34 +58,3 @@ jobs:
       - name: Terraform Plan Status
         if: steps.plan.outcome == 'failure'
         run: exit 1
-
-  destroy:
-    environment: prod
-    name: Terraform Apply
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: .
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
-          aws-region: ${{ vars.AWS_REGION }}
-          role-session-name: MySessionName
-          role-skip-session-tagging: true
-
-      - name: Terraform Destroy
-        uses: dflook/terraform-destroy@v2
-        id: first_try
-        continue-on-error: true
-        with:
-          path: terraform
