@@ -30,6 +30,19 @@ jobs:
           role-session-name: MySessionName
           role-skip-session-tagging: true
 
+      - name: AWS STS Check
+        run: aws sts get-caller-identity
+
+      - name: Write backend config
+        run: |
+          cat > backend.hcl <<EOL
+          bucket         = "${{ secrets.TF_STATE_BUCKET }}"
+          key            = "tfstate/terraform.tfstate"
+          region         = "${{ vars.AWS_REGION }}"
+          dynamodb_table = "${{ secrets.TF_STATE_LOCK_TABLE }}"
+          encrypt        = true
+          EOL
+
       - name: Terraform Apply
         uses: dflook/terraform-apply@v2
         with:
