@@ -47,4 +47,5 @@ jobs:
         uses: dflook/terraform-apply@v2
         with:
           path: terraform
+          backend_config_file: backend.hcl
           auto_approve: false

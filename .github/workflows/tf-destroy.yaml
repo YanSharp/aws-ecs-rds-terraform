@@ -50,4 +50,5 @@ jobs:
         id: first_try
         continue-on-error: true
         with:
+          backend_config_file: backend.hcl
           path: terraform
